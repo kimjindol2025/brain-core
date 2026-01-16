@@ -5,6 +5,7 @@ test_hnsw
 test_digestion
 test_spine
 test_health
+test_cortex
 check_size
 *.swp
 *.swo
