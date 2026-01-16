@@ -22,6 +22,10 @@ DIGEST_OBJS = $(DIGEST_SRCS:.c=.o)
 SPINE_SRCS = kim_spine.c
 SPINE_OBJS = $(SPINE_SRCS:.c=.o)
 
+# Health 소스 파일
+HEALTH_SRCS = kim_health.c
+HEALTH_OBJS = $(HEALTH_SRCS:.c=.o)
+
 # 테스트 프로그램
 TEST        = test_brain
 TEST_SRC    = test_brain.c
@@ -31,9 +35,11 @@ TEST_DIGEST = test_digestion
 TEST_DIGEST_SRC = test_digestion.c
 TEST_SPINE  = test_spine
 TEST_SPINE_SRC = test_spine.c
+TEST_HEALTH = test_health
+TEST_HEALTH_SRC = test_health.c
 
 # 기본 타겟
-all: $(TEST) $(TEST_HNSW) $(TEST_DIGEST) $(TEST_SPINE)
+all: $(TEST) $(TEST_HNSW) $(TEST_DIGEST) $(TEST_SPINE) $(TEST_HEALTH)
 
 # 테스트 프로그램 빌드
 $(TEST): $(OBJS) $(TEST_SRC)
@@ -56,6 +62,11 @@ $(TEST_SPINE): $(SPINE_OBJS) $(TEST_SPINE_SRC)
 	$(CC) $(CFLAGS) $(TEST_SPINE_SRC) $(SPINE_OBJS) -o $(TEST_SPINE) $(LDFLAGS) -pthread
 	@echo "✅ $(TEST_SPINE) created"
 
+$(TEST_HEALTH): $(DIGEST_OBJS) $(SPINE_OBJS) $(HEALTH_OBJS) $(TEST_HEALTH_SRC)
+	@echo "🔨 Building $(TEST_HEALTH)..."
+	$(CC) $(CFLAGS) $(TEST_HEALTH_SRC) $(DIGEST_OBJS) $(SPINE_OBJS) $(HEALTH_OBJS) -o $(TEST_HEALTH) $(LDFLAGS) -pthread
+	@echo "✅ $(TEST_HEALTH) created"
+
 # 오브젝트 파일 생성
 %.o: %.c %.h brain_format.h
 	@echo "🔨 Compiling $<..."
@@ -76,6 +87,10 @@ kim_pancreas.o: kim_pancreas.c kim_pancreas.h kim_stomach.h
 kim_spine.o: kim_spine.c kim_spine.h
 	@echo "🔨 Compiling kim_spine.c..."
 	$(CC) $(CFLAGS) -c kim_spine.c -o kim_spine.o
+
+kim_health.o: kim_health.c kim_health.h kim_stomach.h kim_pancreas.h kim_spine.h
+	@echo "🔨 Compiling kim_health.c..."
+	$(CC) $(CFLAGS) -c kim_health.c -o kim_health.o
 
 # 실행
 run: $(TEST)
@@ -102,10 +117,16 @@ run-spine: $(TEST_SPINE)
 	@echo ""
 	./$(TEST_SPINE)
 
+run-health: $(TEST_HEALTH)
+	@echo ""
+	@echo "🚀 Running $(TEST_HEALTH)..."
+	@echo ""
+	./$(TEST_HEALTH)
+
 # 청소
 clean:
 	@echo "🧹 Cleaning..."
-	rm -f $(OBJS) $(HNSW_OBJS) $(DIGEST_OBJS) $(SPINE_OBJS) $(TEST) $(TEST_HNSW) $(TEST_DIGEST) $(TEST_SPINE) test_brain.db
+	rm -f $(OBJS) $(HNSW_OBJS) $(DIGEST_OBJS) $(SPINE_OBJS) $(HEALTH_OBJS) $(TEST) $(TEST_HNSW) $(TEST_DIGEST) $(TEST_SPINE) $(TEST_HEALTH) test_brain.db
 	@echo "✅ Clean complete"
 
 # 헬프
@@ -118,6 +139,7 @@ help:
 	@echo "  make run-hnsw       - Build and run test_hnsw"
 	@echo "  make run-digestion  - Build and run test_digestion"
 	@echo "  make run-spine      - Build and run test_spine"
+	@echo "  make run-health     - Build and run test_health"
 	@echo "  make clean          - Remove build artifacts"
 	@echo "  make help           - Show this message"
 	@echo ""
@@ -129,9 +151,11 @@ help:
 	@echo "  kim_stomach.c/h    - Ring Buffer (Stomach)"
 	@echo "  kim_pancreas.c/h   - Data Parser (Pancreas)"
 	@echo "  kim_spine.c/h      - Control Bus (Spinal Cord)"
+	@echo "  kim_health.c/h     - Health Monitor (CNS)"
 	@echo "  test_brain.c       - Brain Core test"
 	@echo "  test_hnsw.c        - HNSW search test"
 	@echo "  test_digestion.c   - Digestion system test"
 	@echo "  test_spine.c       - Spinal Cord test"
+	@echo "  test_health.c      - Health Monitor test"
 
-.PHONY: all run run-hnsw run-digestion run-spine clean help
+.PHONY: all run run-hnsw run-digestion run-spine run-health clean help
