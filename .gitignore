@@ -6,6 +6,8 @@ test_digestion
 test_spine
 test_health
 test_cortex
+test_circadian
+test_watchdog
 check_size
 *.swp
 *.swo

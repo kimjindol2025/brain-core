@@ -30,6 +30,14 @@ HEALTH_OBJS = $(HEALTH_SRCS:.c=.o)
 CORTEX_SRCS = kim_cortex.c
 CORTEX_OBJS = $(CORTEX_SRCS:.c=.o)
 
+# Circadian 소스 파일
+CIRCADIAN_SRCS = kim_circadian.c
+CIRCADIAN_OBJS = $(CIRCADIAN_SRCS:.c=.o)
+
+# Watchdog 소스 파일
+WATCHDOG_SRCS = kim_watchdog.c
+WATCHDOG_OBJS = $(WATCHDOG_SRCS:.c=.o)
+
 # 테스트 프로그램
 TEST        = test_brain
 TEST_SRC    = test_brain.c
@@ -43,9 +51,13 @@ TEST_HEALTH = test_health
 TEST_HEALTH_SRC = test_health.c
 TEST_CORTEX = test_cortex
 TEST_CORTEX_SRC = test_cortex.c
+TEST_CIRCADIAN = test_circadian
+TEST_CIRCADIAN_SRC = test_circadian.c
+TEST_WATCHDOG = test_watchdog
+TEST_WATCHDOG_SRC = test_watchdog.c
 
 # 기본 타겟
-all: $(TEST) $(TEST_HNSW) $(TEST_DIGEST) $(TEST_SPINE) $(TEST_HEALTH) $(TEST_CORTEX)
+all: $(TEST) $(TEST_HNSW) $(TEST_DIGEST) $(TEST_SPINE) $(TEST_HEALTH) $(TEST_CORTEX) $(TEST_CIRCADIAN) $(TEST_WATCHDOG)
 
 # 테스트 프로그램 빌드
 $(TEST): $(OBJS) $(TEST_SRC)
@@ -78,6 +90,16 @@ $(TEST_CORTEX): $(SPINE_OBJS) $(CORTEX_OBJS) $(TEST_CORTEX_SRC)
 	$(CC) $(CFLAGS) $(TEST_CORTEX_SRC) $(SPINE_OBJS) $(CORTEX_OBJS) -o $(TEST_CORTEX) $(LDFLAGS) -pthread
 	@echo "✅ $(TEST_CORTEX) created"
 
+$(TEST_CIRCADIAN): $(CIRCADIAN_OBJS) $(TEST_CIRCADIAN_SRC)
+	@echo "🔨 Building $(TEST_CIRCADIAN)..."
+	$(CC) $(CFLAGS) $(TEST_CIRCADIAN_SRC) $(CIRCADIAN_OBJS) -o $(TEST_CIRCADIAN) $(LDFLAGS)
+	@echo "✅ $(TEST_CIRCADIAN) created"
+
+$(TEST_WATCHDOG): $(WATCHDOG_OBJS) $(TEST_WATCHDOG_SRC)
+	@echo "🔨 Building $(TEST_WATCHDOG)..."
+	$(CC) $(CFLAGS) $(TEST_WATCHDOG_SRC) $(WATCHDOG_OBJS) -o $(TEST_WATCHDOG) $(LDFLAGS)
+	@echo "✅ $(TEST_WATCHDOG) created"
+
 # 오브젝트 파일 생성
 %.o: %.c %.h brain_format.h
 	@echo "🔨 Compiling $<..."
@@ -106,6 +128,14 @@ kim_health.o: kim_health.c kim_health.h kim_stomach.h kim_pancreas.h kim_spine.h
 kim_cortex.o: kim_cortex.c kim_cortex.h kim_spine.h
 	@echo "🔨 Compiling kim_cortex.c..."
 	$(CC) $(CFLAGS) -c kim_cortex.c -o kim_cortex.o
+
+kim_circadian.o: kim_circadian.c kim_circadian.h
+	@echo "🔨 Compiling kim_circadian.c..."
+	$(CC) $(CFLAGS) -c kim_circadian.c -o kim_circadian.o
+
+kim_watchdog.o: kim_watchdog.c kim_watchdog.h
+	@echo "🔨 Compiling kim_watchdog.c..."
+	$(CC) $(CFLAGS) -c kim_watchdog.c -o kim_watchdog.o
 
 # 실행
 run: $(TEST)
@@ -144,10 +174,22 @@ run-cortex: $(TEST_CORTEX)
 	@echo ""
 	./$(TEST_CORTEX)
 
+run-circadian: $(TEST_CIRCADIAN)
+	@echo ""
+	@echo "🚀 Running $(TEST_CIRCADIAN)..."
+	@echo ""
+	./$(TEST_CIRCADIAN)
+
+run-watchdog: $(TEST_WATCHDOG)
+	@echo ""
+	@echo "🚀 Running $(TEST_WATCHDOG)..."
+	@echo ""
+	./$(TEST_WATCHDOG)
+
 # 청소
 clean:
 	@echo "🧹 Cleaning..."
-	rm -f $(OBJS) $(HNSW_OBJS) $(DIGEST_OBJS) $(SPINE_OBJS) $(HEALTH_OBJS) $(CORTEX_OBJS) $(TEST) $(TEST_HNSW) $(TEST_DIGEST) $(TEST_SPINE) $(TEST_HEALTH) $(TEST_CORTEX) test_brain.db
+	rm -f $(OBJS) $(HNSW_OBJS) $(DIGEST_OBJS) $(SPINE_OBJS) $(HEALTH_OBJS) $(CORTEX_OBJS) $(CIRCADIAN_OBJS) $(WATCHDOG_OBJS) $(TEST) $(TEST_HNSW) $(TEST_DIGEST) $(TEST_SPINE) $(TEST_HEALTH) $(TEST_CORTEX) $(TEST_CIRCADIAN) $(TEST_WATCHDOG) test_brain.db
 	@echo "✅ Clean complete"
 
 # 헬프
@@ -162,6 +204,8 @@ help:
 	@echo "  make run-spine      - Build and run test_spine"
 	@echo "  make run-health     - Build and run test_health"
 	@echo "  make run-cortex     - Build and run test_cortex"
+	@echo "  make run-circadian  - Build and run test_circadian"
+	@echo "  make run-watchdog   - Build and run test_watchdog"
 	@echo "  make clean          - Remove build artifacts"
 	@echo "  make help           - Show this message"
 	@echo ""
@@ -175,11 +219,15 @@ help:
 	@echo "  kim_spine.c/h      - Control Bus (Spinal Cord)"
 	@echo "  kim_health.c/h     - Health Monitor (CNS)"
 	@echo "  kim_cortex.c/h     - Cerebral Cortex (Thinking)"
+	@echo "  kim_circadian.c/h  - 24/7 Operation (Circadian)"
+	@echo "  kim_watchdog.c/h   - Self-Healing (Watchdog)"
 	@echo "  test_brain.c       - Brain Core test"
 	@echo "  test_hnsw.c        - HNSW search test"
 	@echo "  test_digestion.c   - Digestion system test"
 	@echo "  test_spine.c       - Spinal Cord test"
 	@echo "  test_health.c      - Health Monitor test"
 	@echo "  test_cortex.c      - Cortex thinking test"
+	@echo "  test_circadian.c   - Circadian 24/7 test"
+	@echo "  test_watchdog.c    - Watchdog self-healing test"
 
-.PHONY: all run run-hnsw run-digestion run-spine run-health run-cortex clean help
+.PHONY: all run run-hnsw run-digestion run-spine run-health run-cortex run-circadian run-watchdog clean help
