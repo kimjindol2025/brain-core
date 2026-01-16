@@ -1,0 +1,7 @@
+*.o
+*.db
+test_brain
+check_size
+*.swp
+*.swo
+*~
