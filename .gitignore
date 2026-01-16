@@ -3,6 +3,7 @@
 test_brain
 test_hnsw
 test_digestion
+test_spine
 check_size
 *.swp
 *.swo
