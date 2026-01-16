@@ -4,18 +4,30 @@
 
 CC       = gcc
 CFLAGS   = -std=c11 -Wall -Wextra -O2 -g
-LDFLAGS  =
+LDFLAGS  = -lm
 
 # 소스 파일
 SRCS     = mmap_loader.c index_manager.c
 OBJS     = $(SRCS:.c=.o)
 
+# HNSW 소스 파일
+HNSW_SRCS = hnsw.c
+HNSW_OBJS = $(HNSW_SRCS:.c=.o)
+
+# Digestion 소스 파일
+DIGEST_SRCS = kim_stomach.c kim_pancreas.c
+DIGEST_OBJS = $(DIGEST_SRCS:.c=.o)
+
 # 테스트 프로그램
-TEST     = test_brain
-TEST_SRC = test_brain.c
+TEST       = test_brain
+TEST_SRC   = test_brain.c
+TEST_HNSW  = test_hnsw
+TEST_HNSW_SRC = test_hnsw.c
+TEST_DIGEST = test_digestion
+TEST_DIGEST_SRC = test_digestion.c
 
 # 기본 타겟
-all: $(TEST)
+all: $(TEST) $(TEST_HNSW) $(TEST_DIGEST)
 
 # 테스트 프로그램 빌드
 $(TEST): $(OBJS) $(TEST_SRC)
@@ -23,10 +35,32 @@ $(TEST): $(OBJS) $(TEST_SRC)
 	$(CC) $(CFLAGS) $(TEST_SRC) $(OBJS) -o $(TEST) $(LDFLAGS)
 	@echo "✅ $(TEST) created"
 
+$(TEST_HNSW): $(HNSW_OBJS) $(TEST_HNSW_SRC)
+	@echo "🔨 Building $(TEST_HNSW)..."
+	$(CC) $(CFLAGS) $(TEST_HNSW_SRC) $(HNSW_OBJS) -o $(TEST_HNSW) $(LDFLAGS)
+	@echo "✅ $(TEST_HNSW) created"
+
+$(TEST_DIGEST): $(DIGEST_OBJS) $(TEST_DIGEST_SRC)
+	@echo "🔨 Building $(TEST_DIGEST)..."
+	$(CC) $(CFLAGS) $(TEST_DIGEST_SRC) $(DIGEST_OBJS) -o $(TEST_DIGEST) $(LDFLAGS) -pthread
+	@echo "✅ $(TEST_DIGEST) created"
+
 # 오브젝트 파일 생성
 %.o: %.c %.h brain_format.h
 	@echo "🔨 Compiling $<..."
 	$(CC) $(CFLAGS) -c $< -o $@
+
+hnsw.o: hnsw.c hnsw.h
+	@echo "🔨 Compiling hnsw.c..."
+	$(CC) $(CFLAGS) -c hnsw.c -o hnsw.o
+
+kim_stomach.o: kim_stomach.c kim_stomach.h
+	@echo "🔨 Compiling kim_stomach.c..."
+	$(CC) $(CFLAGS) -c kim_stomach.c -o kim_stomach.o
+
+kim_pancreas.o: kim_pancreas.c kim_pancreas.h kim_stomach.h
+	@echo "🔨 Compiling kim_pancreas.c..."
+	$(CC) $(CFLAGS) -c kim_pancreas.c -o kim_pancreas.o
 
 # 실행
 run: $(TEST)
@@ -35,10 +69,22 @@ run: $(TEST)
 	@echo ""
 	./$(TEST)
 
+run-hnsw: $(TEST_HNSW)
+	@echo ""
+	@echo "🚀 Running $(TEST_HNSW)..."
+	@echo ""
+	./$(TEST_HNSW)
+
+run-digestion: $(TEST_DIGEST)
+	@echo ""
+	@echo "🚀 Running $(TEST_DIGEST)..."
+	@echo ""
+	./$(TEST_DIGEST)
+
 # 청소
 clean:
 	@echo "🧹 Cleaning..."
-	rm -f $(OBJS) $(TEST) test_brain.db
+	rm -f $(OBJS) $(HNSW_OBJS) $(DIGEST_OBJS) $(TEST) $(TEST_HNSW) $(TEST_DIGEST) test_brain.db
 	@echo "✅ Clean complete"
 
 # 헬프
@@ -46,15 +92,22 @@ help:
 	@echo "Brain Core Build System"
 	@echo ""
 	@echo "Targets:"
-	@echo "  make          - Build test program"
-	@echo "  make run      - Build and run test"
-	@echo "  make clean    - Remove build artifacts"
-	@echo "  make help     - Show this message"
+	@echo "  make                - Build all test programs"
+	@echo "  make run            - Build and run test_brain"
+	@echo "  make run-hnsw       - Build and run test_hnsw"
+	@echo "  make run-digestion  - Build and run test_digestion"
+	@echo "  make clean          - Remove build artifacts"
+	@echo "  make help           - Show this message"
 	@echo ""
 	@echo "Files:"
 	@echo "  brain_format.h     - Binary format spec"
 	@echo "  mmap_loader.c/h    - Memory-mapped file loader"
 	@echo "  index_manager.c/h  - ID→Offset hash map"
-	@echo "  test_brain.c       - Integration test"
+	@echo "  hnsw.c/h           - HNSW vector search"
+	@echo "  kim_stomach.c/h    - Ring Buffer (Stomach)"
+	@echo "  kim_pancreas.c/h   - Data Parser (Pancreas)"
+	@echo "  test_brain.c       - Brain Core test"
+	@echo "  test_hnsw.c        - HNSW search test"
+	@echo "  test_digestion.c   - Digestion system test"
 
-.PHONY: all run clean help
+.PHONY: all run run-hnsw run-digestion clean help

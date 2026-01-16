@@ -1,6 +1,8 @@
 *.o
 *.db
 test_brain
+test_hnsw
+test_digestion
 check_size
 *.swp
 *.swo
