@@ -1,6 +1,7 @@
 # Brain Core: Bio-Inspired Digital Organism
 
-**Complete AI system with 13 coordinated organs, sub-millisecond latency, and 2.1 MB footprint**
+**Embedded-First Vector Memory System**
+*Optimized for memory-constrained, real-time AI inference. Not a general-purpose database.*
 
 ---
 
@@ -25,15 +26,14 @@ make bench
 
 ## Core Performance
 
-| Metric | Value | vs SQLite | vs Redis |
-|--------|-------|-----------|----------|
-| **Throughput** | 6,666 ops/sec | Comparable | 2% slower |
-| **Latency (avg)** | 150 μs | 2.3x faster | 1.9x slower |
-| **Memory (1K entries)** | 2.75 MB | **86% less** | **94% less** |
-| **Base overhead** | 2.1 MB | 71% less | 96% less |
-| **Dependencies** | 0 (zero) | 10+ | 1+ |
+| Metric | Brain Core | SQLite | Result |
+|--------|-----------|--------|--------|
+| **Latency (4.39 μs)** | 🏆 | 3,568 μs | 814x faster |
+| **Memory (1K entries)** | 🏆 2.75 MB | ~30 MB | 90% less |
+| **Throughput** | 227K ops/sec | 280K ops/sec | SQLite +23% |
+| **Dependencies** | 🏆 0 (zero) | 10+ | Zero deps |
 
-**Key finding**: Brain Core optimizes for **memory-constrained environments** (embedded, edge, mobile) where SQLite's 15 MB overhead is prohibitive.
+⚠️ **Critical**: Brain Core is **NOT** a database replacement. It's optimized for **embedded AI memory systems** (IoT, Raspberry Pi, edge) where SQLite's 30 MB overhead is prohibitive. Use SQLite for general applications, web backends, and business logic.
 
 ---
 
@@ -126,29 +126,29 @@ brain_remember(brain, "Important fact", 0.9f);
 
 ## Use Cases
 
-### 1. **Real-Time AI Systems**
+### ✅ 1. **Embedded AI Memory** (Recommended)
 
-- Sub-millisecond response requirements
-- Deterministic performance (no GC pauses)
-- Example: Voice assistant processing (phone, earbuds)
+- Raspberry Pi, ARM IoT boards
+- Wearable devices (< 512 MB RAM)
+- On-device vector search
 
-**Why Brain Core**: Fast enough to feel responsive. Memory small enough to fit on device.
+**Why Brain Core**: 2.75 MB for 1,000 memories (SQLite needs 30+ MB). Deterministic 4.39 μs latency.
 
-### 2. **Embedded & IoT Devices**
+### ✅ 2. **Real-Time Vector Inference** (Recommended)
 
-- Raspberry Pi (1-8 GB RAM)
-- Edge computing (ARM boards)
-- Wearable devices (smartwatch)
+- Edge AI semantic search
+- Sub-millisecond response times
+- Consistent latency (p99: 23 μs)
 
-**Why Brain Core**: 2.75 MB for 1,000 memories = practical on all devices.
+**Why Brain Core**: Specialized HNSW indexing, zero-copy mmap, no GC pauses.
 
-### 3. **Memory-Critical Applications**
+### ❌ 3. **NOT Recommended For:**
 
-- Autonomous vehicles (in-car AI)
-- Medical devices (continuous monitoring)
-- Industrial IoT (real-time control)
-
-**Why Brain Core**: 86% less memory than SQLite while maintaining search speed.
+- **Web Applications**: Use SQLite (SQL queries, ACID, transactions)
+- **High-Throughput**: SQLite is 23% faster (280K vs 227K ops/sec)
+- **Large Datasets**: Designed for < 100 MB in-memory
+- **Complex Queries**: No SQL support = painful ad-hoc analysis
+- **Multi-Process**: Single-process only (no replication)
 
 ---
 
@@ -418,12 +418,25 @@ These are **intentional design choices**, not bugs.
 
 ---
 
+## Reality Validation (Actual vs SQLite)
+
+📊 **See [REALITY_VALIDATION_REPORT.md](REALITY_VALIDATION_REPORT.md)** for honest comparison with real benchmark data.
+
+**Key findings**:
+- Brain Core: 814x faster on single operations (4.39 μs vs 3,568 μs)
+- SQLite: 23% higher throughput (280K vs 227K ops/sec)
+- Memory efficiency: 90% less for embedded use cases
+- Realistic positioning: Different categories, not competing
+
+---
+
 ## Getting Help
 
 ### Run Benchmark
 ```bash
 make bench              # Generates benchmark_results.csv
-cat PERFORMANCE_REPORT.md  # Read detailed analysis
+cat PERFORMANCE_REPORT.md  # Technical analysis
+cat REALITY_VALIDATION_REPORT.md  # Honest comparison with SQLite
 ```
 
 ### View Demo
