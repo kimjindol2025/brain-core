@@ -58,6 +58,10 @@ LIVER_OBJS = $(LIVER_SRCS:.c=.o)
 LUNGS_SRCS = kim_lungs.c
 LUNGS_OBJS = $(LUNGS_SRCS:.c=.o)
 
+# Hippocampus 소스 파일
+HIPPOCAMPUS_SRCS = kim_hippocampus.c
+HIPPOCAMPUS_OBJS = $(HIPPOCAMPUS_SRCS:.c=.o)
+
 # 테스트 프로그램
 TEST        = test_brain
 TEST_SRC    = test_brain.c
@@ -100,8 +104,12 @@ TEST_LUNGS_SRC = test_lungs.c
 TEST_INTEGRATION = test_integration
 TEST_INTEGRATION_SRC = test_integration.c
 
+# Hippocampus 테스트 프로그램
+TEST_HIPPOCAMPUS = test_hippocampus
+TEST_HIPPOCAMPUS_SRC = test_hippocampus.c
+
 # 기본 타겟
-all: $(TEST) $(TEST_HNSW) $(TEST_DIGEST) $(TEST_SPINE) $(TEST_HEALTH) $(TEST_CORTEX) $(TEST_CIRCADIAN) $(TEST_WATCHDOG) $(TEST_BINGE) $(TEST_REFLEX) $(TEST_HEART) $(TEST_HEART_24H) $(TEST_MATH) $(TEST_THALAMUS) $(TEST_LIVER) $(TEST_LUNGS) $(TEST_INTEGRATION)
+all: $(TEST) $(TEST_HNSW) $(TEST_DIGEST) $(TEST_SPINE) $(TEST_HEALTH) $(TEST_CORTEX) $(TEST_CIRCADIAN) $(TEST_WATCHDOG) $(TEST_BINGE) $(TEST_REFLEX) $(TEST_HEART) $(TEST_HEART_24H) $(TEST_MATH) $(TEST_THALAMUS) $(TEST_LIVER) $(TEST_LUNGS) $(TEST_INTEGRATION) $(TEST_HIPPOCAMPUS)
 
 # 테스트 프로그램 빌드
 $(TEST): $(OBJS) $(TEST_SRC)
@@ -189,6 +197,11 @@ $(TEST_INTEGRATION): $(LIVER_OBJS) $(LUNGS_OBJS) $(SPINE_OBJS) $(TEST_INTEGRATIO
 	$(CC) $(CFLAGS) $(TEST_INTEGRATION_SRC) $(LIVER_OBJS) $(LUNGS_OBJS) $(SPINE_OBJS) -o $(TEST_INTEGRATION) $(LDFLAGS) -pthread
 	@echo "✅ $(TEST_INTEGRATION) created"
 
+$(TEST_HIPPOCAMPUS): $(HIPPOCAMPUS_OBJS) $(SPINE_OBJS) $(TEST_HIPPOCAMPUS_SRC)
+	@echo "🔨 Building $(TEST_HIPPOCAMPUS)..."
+	$(CC) $(CFLAGS) $(TEST_HIPPOCAMPUS_SRC) $(HIPPOCAMPUS_OBJS) $(SPINE_OBJS) -o $(TEST_HIPPOCAMPUS) $(LDFLAGS) -pthread
+	@echo "✅ $(TEST_HIPPOCAMPUS) created"
+
 # 오브젝트 파일 생성
 %.o: %.c %.h brain_format.h
 	@echo "🔨 Compiling $<..."
@@ -245,6 +258,10 @@ kim_liver.o: kim_liver.c kim_liver.h kim_spine.h
 kim_lungs.o: kim_lungs.c kim_lungs.h kim_spine.h
 	@echo "🔨 Compiling kim_lungs.c..."
 	$(CC) $(CFLAGS) -c kim_lungs.c -o kim_lungs.o
+
+kim_hippocampus.o: kim_hippocampus.c kim_hippocampus.h kim_spine.h
+	@echo "🔨 Compiling kim_hippocampus.c..."
+	$(CC) $(CFLAGS) -c kim_hippocampus.c -o kim_hippocampus.o
 
 # 실행
 run: $(TEST)
@@ -349,10 +366,16 @@ run-integration: $(TEST_INTEGRATION)
 	@echo ""
 	./$(TEST_INTEGRATION)
 
+run-hippocampus: $(TEST_HIPPOCAMPUS)
+	@echo ""
+	@echo "🚀 Running $(TEST_HIPPOCAMPUS)..."
+	@echo ""
+	./$(TEST_HIPPOCAMPUS)
+
 # 청소
 clean:
 	@echo "🧹 Cleaning..."
-	rm -f $(OBJS) $(HNSW_OBJS) $(DIGEST_OBJS) $(SPINE_OBJS) $(HEALTH_OBJS) $(CORTEX_OBJS) $(CIRCADIAN_OBJS) $(WATCHDOG_OBJS) $(HEART_OBJS) $(MATH_OBJS) $(THALAMUS_OBJS) $(LIVER_OBJS) $(LUNGS_OBJS) $(TEST) $(TEST_HNSW) $(TEST_DIGEST) $(TEST_SPINE) $(TEST_HEALTH) $(TEST_CORTEX) $(TEST_CIRCADIAN) $(TEST_WATCHDOG) $(TEST_BINGE) $(TEST_REFLEX) $(TEST_HEART) $(TEST_HEART_24H) $(TEST_MATH) $(TEST_THALAMUS) $(TEST_LIVER) $(TEST_LUNGS) $(TEST_INTEGRATION) test_brain.db
+	rm -f $(OBJS) $(HNSW_OBJS) $(DIGEST_OBJS) $(SPINE_OBJS) $(HEALTH_OBJS) $(CORTEX_OBJS) $(CIRCADIAN_OBJS) $(WATCHDOG_OBJS) $(HEART_OBJS) $(MATH_OBJS) $(THALAMUS_OBJS) $(LIVER_OBJS) $(LUNGS_OBJS) $(HIPPOCAMPUS_OBJS) $(TEST) $(TEST_HNSW) $(TEST_DIGEST) $(TEST_SPINE) $(TEST_HEALTH) $(TEST_CORTEX) $(TEST_CIRCADIAN) $(TEST_WATCHDOG) $(TEST_BINGE) $(TEST_REFLEX) $(TEST_HEART) $(TEST_HEART_24H) $(TEST_MATH) $(TEST_THALAMUS) $(TEST_LIVER) $(TEST_LUNGS) $(TEST_INTEGRATION) $(TEST_HIPPOCAMPUS) test_brain.db
 	@echo "✅ Clean complete"
 
 # 헬프
@@ -376,6 +399,7 @@ help:
 	@echo "  make run-liver      - Build and run test_liver (간)"
 	@echo "  make run-lungs      - Build and run test_lungs (폐)"
 	@echo "  make run-integration- Build and run test_integration (통합)"
+	@echo "  make run-hippocampus- Build and run test_hippocampus (해마)"
 	@echo "  make clean          - Remove build artifacts"
 	@echo "  make help           - Show this message"
 	@echo ""
@@ -407,4 +431,4 @@ help:
 	@echo "  test_math.c        - Arithmetic Accelerator test"
 	@echo "  test_thalamus.c    - Thalamus Gatekeeper test (도리도리)"
 
-.PHONY: all run run-hnsw run-digestion run-spine run-health run-cortex run-circadian run-watchdog run-heart run-heart-24h run-math run-thalamus clean help
+.PHONY: all run run-hnsw run-digestion run-spine run-health run-cortex run-circadian run-watchdog run-heart run-heart-24h run-math run-thalamus run-liver run-lungs run-integration run-hippocampus clean help
