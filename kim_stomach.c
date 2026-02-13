@@ -289,3 +289,12 @@ void stomach_stats(const stomach_t* s) {
     printf("  Head:            %u\n", s->head);
     printf("  Tail:            %u\n", s->tail);
 }
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ * Utility Functions
+ * ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+int stomach_get_fill_percent(const stomach_t* s) {
+    if (!s || s->capacity == 0) return 0;
+    return (int)((float)s->count / s->capacity * 100.0f);
+}

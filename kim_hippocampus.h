@@ -30,7 +30,7 @@
 #include "kim_spine.h"
 
 /* Forward declarations */
-typedef struct cortex_t cortex_t;
+/* cortex_t is defined elsewhere, use void* in this header to avoid conflicts */
 typedef struct mmap_file_t mmap_file_t;
 typedef struct brain_index_t brain_index_t;
 typedef struct hnsw_index_t hnsw_index_t;
@@ -76,7 +76,7 @@ typedef struct {
 
     /* Integration */
     spine_t*         spine;               /* Spine IPC (신호 전송) */
-    cortex_t*        cortex;              /* Cortex 참조 (검색 시) */
+    void*            cortex;              /* Cortex 참조 (검색 시) - opaque pointer */
     int              organ_id;            /* Organ ID (=6) */
 
     /* Dream Thread (Background Consolidation) */
@@ -137,7 +137,7 @@ void hippocampus_consolidate(hippocampus_t* hippo);
 void hippocampus_set_spine(hippocampus_t* hippo, spine_t* spine, int organ_id);
 
 /* Connect Hippocampus to Cortex for integrated operation */
-void hippocampus_set_cortex(hippocampus_t* hippo, cortex_t* cortex);
+void hippocampus_set_cortex(hippocampus_t* hippo, void* cortex);
 
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
  * Monitoring

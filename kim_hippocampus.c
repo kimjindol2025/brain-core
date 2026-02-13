@@ -291,7 +291,7 @@ void hippocampus_set_spine(hippocampus_t* hippo, spine_t* spine, int organ_id) {
     printf("[Hippocampus] Connected to Spine (organ_id=%d)\n", organ_id);
 }
 
-void hippocampus_set_cortex(hippocampus_t* hippo, cortex_t* cortex) {
+void hippocampus_set_cortex(hippocampus_t* hippo, void* cortex) {
     if (!hippo) return;
 
     pthread_mutex_lock(&hippo->lock);

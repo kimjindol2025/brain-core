@@ -87,4 +87,7 @@ void stomach_stats(const stomach_t* stomach);
 int stomach_wait_not_empty(stomach_t* stomach, int timeout_ms);
 int stomach_wait_not_full(stomach_t* stomach, int timeout_ms);
 
+/* Utility */
+int stomach_get_fill_percent(const stomach_t* s);
+
 #endif /* KIM_STOMACH_H */
