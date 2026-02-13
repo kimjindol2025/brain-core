@@ -38,6 +38,26 @@ CIRCADIAN_OBJS = $(CIRCADIAN_SRCS:.c=.o)
 WATCHDOG_SRCS = kim_watchdog.c
 WATCHDOG_OBJS = $(WATCHDOG_SRCS:.c=.o)
 
+# Heart 소스 파일
+HEART_SRCS = kim_heart.c
+HEART_OBJS = $(HEART_SRCS:.c=.o)
+
+# Math 소스 파일
+MATH_SRCS = kim_math.c
+MATH_OBJS = $(MATH_SRCS:.c=.o)
+
+# Thalamus 소스 파일
+THALAMUS_SRCS = kim_thalamus.c
+THALAMUS_OBJS = $(THALAMUS_SRCS:.c=.o)
+
+# Liver 소스 파일
+LIVER_SRCS = kim_liver.c
+LIVER_OBJS = $(LIVER_SRCS:.c=.o)
+
+# Lungs 소스 파일
+LUNGS_SRCS = kim_lungs.c
+LUNGS_OBJS = $(LUNGS_SRCS:.c=.o)
+
 # 테스트 프로그램
 TEST        = test_brain
 TEST_SRC    = test_brain.c
@@ -55,9 +75,33 @@ TEST_CIRCADIAN = test_circadian
 TEST_CIRCADIAN_SRC = test_circadian.c
 TEST_WATCHDOG = test_watchdog
 TEST_WATCHDOG_SRC = test_watchdog.c
+TEST_BINGE = test_binge_alert
+TEST_BINGE_SRC = test_binge_alert.c
+TEST_REFLEX = test_spine_reflex
+TEST_REFLEX_SRC = test_spine_reflex.c
+TEST_HEART = test_heart
+TEST_HEART_SRC = test_heart.c
+TEST_HEART_24H = test_heart_24h
+TEST_HEART_24H_SRC = test_heart_24h.c
+TEST_MATH = test_math
+TEST_MATH_SRC = test_math.c
+TEST_THALAMUS = test_thalamus
+TEST_THALAMUS_SRC = test_thalamus.c
+
+# Liver 테스트 프로그램
+TEST_LIVER = test_liver
+TEST_LIVER_SRC = test_liver.c
+
+# Lungs 테스트 프로그램
+TEST_LUNGS = test_lungs
+TEST_LUNGS_SRC = test_lungs.c
+
+# 통합 테스트 프로그램
+TEST_INTEGRATION = test_integration
+TEST_INTEGRATION_SRC = test_integration.c
 
 # 기본 타겟
-all: $(TEST) $(TEST_HNSW) $(TEST_DIGEST) $(TEST_SPINE) $(TEST_HEALTH) $(TEST_CORTEX) $(TEST_CIRCADIAN) $(TEST_WATCHDOG)
+all: $(TEST) $(TEST_HNSW) $(TEST_DIGEST) $(TEST_SPINE) $(TEST_HEALTH) $(TEST_CORTEX) $(TEST_CIRCADIAN) $(TEST_WATCHDOG) $(TEST_BINGE) $(TEST_REFLEX) $(TEST_HEART) $(TEST_HEART_24H) $(TEST_MATH) $(TEST_THALAMUS) $(TEST_LIVER) $(TEST_LUNGS) $(TEST_INTEGRATION)
 
 # 테스트 프로그램 빌드
 $(TEST): $(OBJS) $(TEST_SRC)
@@ -100,6 +144,51 @@ $(TEST_WATCHDOG): $(WATCHDOG_OBJS) $(TEST_WATCHDOG_SRC)
 	$(CC) $(CFLAGS) $(TEST_WATCHDOG_SRC) $(WATCHDOG_OBJS) -o $(TEST_WATCHDOG) $(LDFLAGS)
 	@echo "✅ $(TEST_WATCHDOG) created"
 
+$(TEST_BINGE): $(DIGEST_OBJS) $(TEST_BINGE_SRC)
+	@echo "🔨 Building $(TEST_BINGE)..."
+	$(CC) $(CFLAGS) $(TEST_BINGE_SRC) $(DIGEST_OBJS) -o $(TEST_BINGE) $(LDFLAGS) -pthread
+	@echo "✅ $(TEST_BINGE) created"
+
+$(TEST_REFLEX): $(DIGEST_OBJS) $(SPINE_OBJS) $(TEST_REFLEX_SRC)
+	@echo "🔨 Building $(TEST_REFLEX)..."
+	$(CC) $(CFLAGS) $(TEST_REFLEX_SRC) $(DIGEST_OBJS) $(SPINE_OBJS) -o $(TEST_REFLEX) $(LDFLAGS) -pthread
+	@echo "✅ $(TEST_REFLEX) created"
+
+$(TEST_HEART): $(DIGEST_OBJS) $(SPINE_OBJS) $(HEART_OBJS) $(TEST_HEART_SRC)
+	@echo "🔨 Building $(TEST_HEART)..."
+	$(CC) $(CFLAGS) $(TEST_HEART_SRC) $(DIGEST_OBJS) $(SPINE_OBJS) $(HEART_OBJS) -o $(TEST_HEART) $(LDFLAGS) -pthread
+	@echo "✅ $(TEST_HEART) created"
+
+$(TEST_HEART_24H): $(DIGEST_OBJS) $(SPINE_OBJS) $(HEART_OBJS) $(TEST_HEART_24H_SRC)
+	@echo "🔨 Building $(TEST_HEART_24H)..."
+	$(CC) $(CFLAGS) $(TEST_HEART_24H_SRC) $(DIGEST_OBJS) $(SPINE_OBJS) $(HEART_OBJS) -o $(TEST_HEART_24H) $(LDFLAGS) -pthread
+	@echo "✅ $(TEST_HEART_24H) created"
+
+$(TEST_MATH): $(MATH_OBJS) $(TEST_MATH_SRC)
+	@echo "🔨 Building $(TEST_MATH)..."
+	$(CC) $(CFLAGS) $(TEST_MATH_SRC) $(MATH_OBJS) -o $(TEST_MATH) $(LDFLAGS)
+	@echo "✅ $(TEST_MATH) created"
+
+$(TEST_THALAMUS): $(THALAMUS_OBJS) $(TEST_THALAMUS_SRC)
+	@echo "🔨 Building $(TEST_THALAMUS)..."
+	$(CC) $(CFLAGS) $(TEST_THALAMUS_SRC) $(THALAMUS_OBJS) -o $(TEST_THALAMUS) $(LDFLAGS)
+	@echo "✅ $(TEST_THALAMUS) created"
+
+$(TEST_LIVER): $(LIVER_OBJS) $(SPINE_OBJS) $(TEST_LIVER_SRC)
+	@echo "🔨 Building $(TEST_LIVER)..."
+	$(CC) $(CFLAGS) $(TEST_LIVER_SRC) $(LIVER_OBJS) $(SPINE_OBJS) -o $(TEST_LIVER) $(LDFLAGS) -pthread
+	@echo "✅ $(TEST_LIVER) created"
+
+$(TEST_LUNGS): $(LUNGS_OBJS) $(SPINE_OBJS) $(TEST_LUNGS_SRC)
+	@echo "🔨 Building $(TEST_LUNGS)..."
+	$(CC) $(CFLAGS) $(TEST_LUNGS_SRC) $(LUNGS_OBJS) $(SPINE_OBJS) -o $(TEST_LUNGS) $(LDFLAGS) -pthread
+	@echo "✅ $(TEST_LUNGS) created"
+
+$(TEST_INTEGRATION): $(LIVER_OBJS) $(LUNGS_OBJS) $(SPINE_OBJS) $(TEST_INTEGRATION_SRC)
+	@echo "🔨 Building $(TEST_INTEGRATION)..."
+	$(CC) $(CFLAGS) $(TEST_INTEGRATION_SRC) $(LIVER_OBJS) $(LUNGS_OBJS) $(SPINE_OBJS) -o $(TEST_INTEGRATION) $(LDFLAGS) -pthread
+	@echo "✅ $(TEST_INTEGRATION) created"
+
 # 오브젝트 파일 생성
 %.o: %.c %.h brain_format.h
 	@echo "🔨 Compiling $<..."
@@ -136,6 +225,26 @@ kim_circadian.o: kim_circadian.c kim_circadian.h
 kim_watchdog.o: kim_watchdog.c kim_watchdog.h
 	@echo "🔨 Compiling kim_watchdog.c..."
 	$(CC) $(CFLAGS) -c kim_watchdog.c -o kim_watchdog.o
+
+kim_heart.o: kim_heart.c kim_heart.h kim_stomach.h
+	@echo "🔨 Compiling kim_heart.c..."
+	$(CC) $(CFLAGS) -c kim_heart.c -o kim_heart.o
+
+kim_math.o: kim_math.c kim_math.h
+	@echo "🔨 Compiling kim_math.c..."
+	$(CC) $(CFLAGS) -c kim_math.c -o kim_math.o
+
+kim_thalamus.o: kim_thalamus.c kim_thalamus.h
+	@echo "🔨 Compiling kim_thalamus.c..."
+	$(CC) $(CFLAGS) -c kim_thalamus.c -o kim_thalamus.o
+
+kim_liver.o: kim_liver.c kim_liver.h kim_spine.h
+	@echo "🔨 Compiling kim_liver.c..."
+	$(CC) $(CFLAGS) -c kim_liver.c -o kim_liver.o
+
+kim_lungs.o: kim_lungs.c kim_lungs.h kim_spine.h
+	@echo "🔨 Compiling kim_lungs.c..."
+	$(CC) $(CFLAGS) -c kim_lungs.c -o kim_lungs.o
 
 # 실행
 run: $(TEST)
@@ -186,10 +295,64 @@ run-watchdog: $(TEST_WATCHDOG)
 	@echo ""
 	./$(TEST_WATCHDOG)
 
+run-binge: $(TEST_BINGE)
+	@echo ""
+	@echo "🚀 Running $(TEST_BINGE)..."
+	@echo ""
+	./$(TEST_BINGE)
+
+run-reflex: $(TEST_REFLEX)
+	@echo ""
+	@echo "🚀 Running $(TEST_REFLEX)..."
+	@echo ""
+	./$(TEST_REFLEX)
+
+run-heart: $(TEST_HEART)
+	@echo ""
+	@echo "🚀 Running $(TEST_HEART)..."
+	@echo ""
+	./$(TEST_HEART)
+
+run-heart-24h: $(TEST_HEART_24H)
+	@echo ""
+	@echo "🚀 Running $(TEST_HEART_24H)..."
+	@echo ""
+	./$(TEST_HEART_24H)
+
+run-math: $(TEST_MATH)
+	@echo ""
+	@echo "🚀 Running $(TEST_MATH)..."
+	@echo ""
+	./$(TEST_MATH)
+
+run-thalamus: $(TEST_THALAMUS)
+	@echo ""
+	@echo "🚀 Running $(TEST_THALAMUS)..."
+	@echo ""
+	./$(TEST_THALAMUS)
+
+run-liver: $(TEST_LIVER)
+	@echo ""
+	@echo "🚀 Running $(TEST_LIVER)..."
+	@echo ""
+	./$(TEST_LIVER)
+
+run-lungs: $(TEST_LUNGS)
+	@echo ""
+	@echo "🚀 Running $(TEST_LUNGS)..."
+	@echo ""
+	./$(TEST_LUNGS)
+
+run-integration: $(TEST_INTEGRATION)
+	@echo ""
+	@echo "🚀 Running $(TEST_INTEGRATION)..."
+	@echo ""
+	./$(TEST_INTEGRATION)
+
 # 청소
 clean:
 	@echo "🧹 Cleaning..."
-	rm -f $(OBJS) $(HNSW_OBJS) $(DIGEST_OBJS) $(SPINE_OBJS) $(HEALTH_OBJS) $(CORTEX_OBJS) $(CIRCADIAN_OBJS) $(WATCHDOG_OBJS) $(TEST) $(TEST_HNSW) $(TEST_DIGEST) $(TEST_SPINE) $(TEST_HEALTH) $(TEST_CORTEX) $(TEST_CIRCADIAN) $(TEST_WATCHDOG) test_brain.db
+	rm -f $(OBJS) $(HNSW_OBJS) $(DIGEST_OBJS) $(SPINE_OBJS) $(HEALTH_OBJS) $(CORTEX_OBJS) $(CIRCADIAN_OBJS) $(WATCHDOG_OBJS) $(HEART_OBJS) $(MATH_OBJS) $(THALAMUS_OBJS) $(LIVER_OBJS) $(LUNGS_OBJS) $(TEST) $(TEST_HNSW) $(TEST_DIGEST) $(TEST_SPINE) $(TEST_HEALTH) $(TEST_CORTEX) $(TEST_CIRCADIAN) $(TEST_WATCHDOG) $(TEST_BINGE) $(TEST_REFLEX) $(TEST_HEART) $(TEST_HEART_24H) $(TEST_MATH) $(TEST_THALAMUS) $(TEST_LIVER) $(TEST_LUNGS) $(TEST_INTEGRATION) test_brain.db
 	@echo "✅ Clean complete"
 
 # 헬프
@@ -206,6 +369,13 @@ help:
 	@echo "  make run-cortex     - Build and run test_cortex"
 	@echo "  make run-circadian  - Build and run test_circadian"
 	@echo "  make run-watchdog   - Build and run test_watchdog"
+	@echo "  make run-heart      - Build and run test_heart"
+	@echo "  make run-heart-24h  - Build and run test_heart_24h"
+	@echo "  make run-math       - Build and run test_math"
+	@echo "  make run-thalamus   - Build and run test_thalamus (도리도리)"
+	@echo "  make run-liver      - Build and run test_liver (간)"
+	@echo "  make run-lungs      - Build and run test_lungs (폐)"
+	@echo "  make run-integration- Build and run test_integration (통합)"
 	@echo "  make clean          - Remove build artifacts"
 	@echo "  make help           - Show this message"
 	@echo ""
@@ -221,6 +391,9 @@ help:
 	@echo "  kim_cortex.c/h     - Cerebral Cortex (Thinking)"
 	@echo "  kim_circadian.c/h  - 24/7 Operation (Circadian)"
 	@echo "  kim_watchdog.c/h   - Self-Healing (Watchdog)"
+	@echo "  kim_heart.c/h      - Heart Rate Monitor"
+	@echo "  kim_math.c/h       - Arithmetic Accelerator"
+	@echo "  kim_thalamus.c/h   - Thalamus Gatekeeper (도리도리)"
 	@echo "  test_brain.c       - Brain Core test"
 	@echo "  test_hnsw.c        - HNSW search test"
 	@echo "  test_digestion.c   - Digestion system test"
@@ -229,5 +402,9 @@ help:
 	@echo "  test_cortex.c      - Cortex thinking test"
 	@echo "  test_circadian.c   - Circadian 24/7 test"
 	@echo "  test_watchdog.c    - Watchdog self-healing test"
+	@echo "  test_heart.c       - Heart Rate Monitor test"
+	@echo "  test_heart_24h.c   - Heart 24-hour simulation"
+	@echo "  test_math.c        - Arithmetic Accelerator test"
+	@echo "  test_thalamus.c    - Thalamus Gatekeeper test (도리도리)"
 
-.PHONY: all run run-hnsw run-digestion run-spine run-health run-cortex run-circadian run-watchdog clean help
+.PHONY: all run run-hnsw run-digestion run-spine run-health run-cortex run-circadian run-watchdog run-heart run-heart-24h run-math run-thalamus clean help
