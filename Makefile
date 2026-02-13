@@ -116,8 +116,16 @@ BRAIN_OBJS = $(BRAIN_SRCS:.c=.o)
 TEST_BRAIN_CORE = test_brain_core
 TEST_BRAIN_CORE_SRC = test_brain_core.c
 
+# Phase 11: Benchmark & Demo 프로그램
+BENCHMARK_SRCS = benchmark.c
+BENCHMARK_OBJS = $(BENCHMARK_SRCS:.c=.o)
+BENCH_BRAIN_CORE = bench_brain_core
+BENCH_BRAIN_CORE_SRC = bench_brain_core.c
+DEMO_QUICKSTART = demo_quickstart
+DEMO_QUICKSTART_SRC = demo_quickstart.c
+
 # 기본 타겟
-all: $(TEST) $(TEST_HNSW) $(TEST_DIGEST) $(TEST_SPINE) $(TEST_HEALTH) $(TEST_CORTEX) $(TEST_CIRCADIAN) $(TEST_WATCHDOG) $(TEST_BINGE) $(TEST_REFLEX) $(TEST_HEART) $(TEST_HEART_24H) $(TEST_MATH) $(TEST_THALAMUS) $(TEST_LIVER) $(TEST_LUNGS) $(TEST_INTEGRATION) $(TEST_HIPPOCAMPUS) $(TEST_BRAIN_CORE)
+all: $(TEST) $(TEST_HNSW) $(TEST_DIGEST) $(TEST_SPINE) $(TEST_HEALTH) $(TEST_CORTEX) $(TEST_CIRCADIAN) $(TEST_WATCHDOG) $(TEST_BINGE) $(TEST_REFLEX) $(TEST_HEART) $(TEST_HEART_24H) $(TEST_MATH) $(TEST_THALAMUS) $(TEST_LIVER) $(TEST_LUNGS) $(TEST_INTEGRATION) $(TEST_HIPPOCAMPUS) $(TEST_BRAIN_CORE) $(BENCH_BRAIN_CORE) $(DEMO_QUICKSTART)
 
 # 테스트 프로그램 빌드
 $(TEST): $(OBJS) $(TEST_SRC)
@@ -215,6 +223,23 @@ $(TEST_BRAIN_CORE): $(BRAIN_OBJS) $(DIGEST_OBJS) $(SPINE_OBJS) $(HEALTH_OBJS) $(
 	@echo "🔨 Building $(TEST_BRAIN_CORE) (13 organs)..."
 	$(CC) $(CFLAGS) $(TEST_BRAIN_CORE_SRC) $(BRAIN_OBJS) $(DIGEST_OBJS) $(SPINE_OBJS) $(HEALTH_OBJS) $(CORTEX_OBJS) $(CIRCADIAN_OBJS) $(WATCHDOG_OBJS) $(HEART_OBJS) $(MATH_OBJS) $(THALAMUS_OBJS) $(LIVER_OBJS) $(LUNGS_OBJS) $(HIPPOCAMPUS_OBJS) -o $(TEST_BRAIN_CORE) $(LDFLAGS) -pthread
 	@echo "✅ $(TEST_BRAIN_CORE) created - DIGITAL ORGANISM COMPLETE!"
+
+# Phase 11: Benchmark Framework
+$(BENCHMARK_OBJS): benchmark.c benchmark.h
+	@echo "🔨 Compiling benchmark.c..."
+	$(CC) $(CFLAGS) -c benchmark.c -o benchmark.o
+
+# Phase 11: Performance Benchmark
+$(BENCH_BRAIN_CORE): $(BRAIN_OBJS) $(DIGEST_OBJS) $(SPINE_OBJS) $(HEALTH_OBJS) $(CORTEX_OBJS) $(CIRCADIAN_OBJS) $(WATCHDOG_OBJS) $(HEART_OBJS) $(MATH_OBJS) $(THALAMUS_OBJS) $(LIVER_OBJS) $(LUNGS_OBJS) $(HIPPOCAMPUS_OBJS) $(BENCHMARK_OBJS) $(BENCH_BRAIN_CORE_SRC)
+	@echo "🔨 Building $(BENCH_BRAIN_CORE) (Performance Benchmark)..."
+	$(CC) $(CFLAGS) $(BENCH_BRAIN_CORE_SRC) $(BRAIN_OBJS) $(DIGEST_OBJS) $(SPINE_OBJS) $(HEALTH_OBJS) $(CORTEX_OBJS) $(CIRCADIAN_OBJS) $(WATCHDOG_OBJS) $(HEART_OBJS) $(MATH_OBJS) $(THALAMUS_OBJS) $(LIVER_OBJS) $(LUNGS_OBJS) $(HIPPOCAMPUS_OBJS) $(BENCHMARK_OBJS) -o $(BENCH_BRAIN_CORE) $(LDFLAGS) -pthread
+	@echo "✅ $(BENCH_BRAIN_CORE) created"
+
+# Phase 11: Demo - Quick Start
+$(DEMO_QUICKSTART): $(BRAIN_OBJS) $(DIGEST_OBJS) $(SPINE_OBJS) $(HEALTH_OBJS) $(CORTEX_OBJS) $(CIRCADIAN_OBJS) $(WATCHDOG_OBJS) $(HEART_OBJS) $(MATH_OBJS) $(THALAMUS_OBJS) $(LIVER_OBJS) $(LUNGS_OBJS) $(HIPPOCAMPUS_OBJS) $(DEMO_QUICKSTART_SRC)
+	@echo "🔨 Building $(DEMO_QUICKSTART) (Demo)..."
+	$(CC) $(CFLAGS) $(DEMO_QUICKSTART_SRC) $(BRAIN_OBJS) $(DIGEST_OBJS) $(SPINE_OBJS) $(HEALTH_OBJS) $(CORTEX_OBJS) $(CIRCADIAN_OBJS) $(WATCHDOG_OBJS) $(HEART_OBJS) $(MATH_OBJS) $(THALAMUS_OBJS) $(LIVER_OBJS) $(LUNGS_OBJS) $(HIPPOCAMPUS_OBJS) -o $(DEMO_QUICKSTART) $(LDFLAGS) -pthread
+	@echo "✅ $(DEMO_QUICKSTART) created"
 
 # 오브젝트 파일 생성
 %.o: %.c %.h brain_format.h
@@ -396,18 +421,47 @@ run-brain-core: $(TEST_BRAIN_CORE)
 	@echo ""
 	./$(TEST_BRAIN_CORE)
 
+# Phase 11: Benchmark
+bench: $(BENCH_BRAIN_CORE)
+	@echo ""
+	@echo "📊 Running Performance Benchmark..."
+	@echo ""
+	./$(BENCH_BRAIN_CORE)
+
+# Phase 11: Quick Start Demo
+demo: $(DEMO_QUICKSTART)
+	@echo ""
+	@echo "🎬 Running Quick Start Demo..."
+	@echo ""
+	./$(DEMO_QUICKSTART)
+
+# Phase 11: Menu-driven demos
+demo-menu:
+	@echo ""
+	@echo "🧠 Brain Core Demo Launcher"
+	@echo ""
+	./demo.sh
+
 # 청소
 clean:
 	@echo "🧹 Cleaning..."
-	rm -f $(OBJS) $(HNSW_OBJS) $(DIGEST_OBJS) $(SPINE_OBJS) $(HEALTH_OBJS) $(CORTEX_OBJS) $(CIRCADIAN_OBJS) $(WATCHDOG_OBJS) $(HEART_OBJS) $(MATH_OBJS) $(THALAMUS_OBJS) $(LIVER_OBJS) $(LUNGS_OBJS) $(HIPPOCAMPUS_OBJS) $(BRAIN_OBJS) $(TEST) $(TEST_HNSW) $(TEST_DIGEST) $(TEST_SPINE) $(TEST_HEALTH) $(TEST_CORTEX) $(TEST_CIRCADIAN) $(TEST_WATCHDOG) $(TEST_BINGE) $(TEST_REFLEX) $(TEST_HEART) $(TEST_HEART_24H) $(TEST_MATH) $(TEST_THALAMUS) $(TEST_LIVER) $(TEST_LUNGS) $(TEST_INTEGRATION) $(TEST_HIPPOCAMPUS) $(TEST_BRAIN_CORE) test_brain.db
+	rm -f $(OBJS) $(HNSW_OBJS) $(DIGEST_OBJS) $(SPINE_OBJS) $(HEALTH_OBJS) $(CORTEX_OBJS) $(CIRCADIAN_OBJS) $(WATCHDOG_OBJS) $(HEART_OBJS) $(MATH_OBJS) $(THALAMUS_OBJS) $(LIVER_OBJS) $(LUNGS_OBJS) $(HIPPOCAMPUS_OBJS) $(BRAIN_OBJS) $(BENCHMARK_OBJS) $(TEST) $(TEST_HNSW) $(TEST_DIGEST) $(TEST_SPINE) $(TEST_HEALTH) $(TEST_CORTEX) $(TEST_CIRCADIAN) $(TEST_WATCHDOG) $(TEST_BINGE) $(TEST_REFLEX) $(TEST_HEART) $(TEST_HEART_24H) $(TEST_MATH) $(TEST_THALAMUS) $(TEST_LIVER) $(TEST_LUNGS) $(TEST_INTEGRATION) $(TEST_HIPPOCAMPUS) $(TEST_BRAIN_CORE) $(BENCH_BRAIN_CORE) $(DEMO_QUICKSTART) test_brain.db benchmark_results.csv
 	@echo "✅ Clean complete"
 
 # 헬프
 help:
 	@echo "Brain Core Build System"
 	@echo ""
-	@echo "Targets:"
-	@echo "  make                - Build all test programs"
+	@echo "Core Targets:"
+	@echo "  make                - Build all programs"
+	@echo "  make run-brain-core - Build and run complete Brain Core"
+	@echo ""
+	@echo "Phase 11: Portfolio Enhancement (NEW!)"
+	@echo "  make bench          - Run performance benchmark"
+	@echo "  make demo           - Run quick start demo"
+	@echo "  make demo-menu      - Interactive demo launcher"
+	@echo ""
+	@echo "Individual Organ Tests:"
 	@echo "  make run            - Build and run test_brain"
 	@echo "  make run-hnsw       - Build and run test_hnsw"
 	@echo "  make run-digestion  - Build and run test_digestion"
@@ -419,12 +473,11 @@ help:
 	@echo "  make run-heart      - Build and run test_heart"
 	@echo "  make run-heart-24h  - Build and run test_heart_24h"
 	@echo "  make run-math       - Build and run test_math"
-	@echo "  make run-thalamus   - Build and run test_thalamus (도리도리)"
-	@echo "  make run-liver      - Build and run test_liver (간)"
-	@echo "  make run-lungs      - Build and run test_lungs (폐)"
-	@echo "  make run-integration- Build and run test_integration (통합)"
-	@echo "  make run-hippocampus- Build and run test_hippocampus (해마)"
-	@echo "  make run-brain-core - Build and run test_brain_core (전체 뇌)"
+	@echo "  make run-thalamus   - Build and run test_thalamus"
+	@echo "  make run-liver      - Build and run test_liver"
+	@echo "  make run-lungs      - Build and run test_lungs"
+	@echo "  make run-integration- Build and run test_integration"
+	@echo "  make run-hippocampus- Build and run test_hippocampus"
 	@echo "  make clean          - Remove build artifacts"
 	@echo "  make help           - Show this message"
 	@echo ""
@@ -456,4 +509,4 @@ help:
 	@echo "  test_math.c        - Arithmetic Accelerator test"
 	@echo "  test_thalamus.c    - Thalamus Gatekeeper test (도리도리)"
 
-.PHONY: all run run-hnsw run-digestion run-spine run-health run-cortex run-circadian run-watchdog run-heart run-heart-24h run-math run-thalamus run-liver run-lungs run-integration run-hippocampus run-brain-core clean help
+.PHONY: all run run-hnsw run-digestion run-spine run-health run-cortex run-circadian run-watchdog run-heart run-heart-24h run-math run-thalamus run-liver run-lungs run-integration run-hippocampus run-brain-core bench demo demo-menu clean help
